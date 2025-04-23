@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Loader2 } from "lucide-react";
 
 interface ChoiceQuestion {
 	type: "choice";
@@ -131,7 +132,14 @@ export const GeneratorInput = () => {
 			/>
 
 			<Button onClick={handleGenerate} disabled={loading}>
-				{loading ? "生成中..." : "クイズを生成する"}
+				{loading ? (
+					<>
+						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+						生成中...
+					</>
+				) : (
+					"クイズを生成する"
+				)}
 			</Button>
 
 			{questions.length > 0 && (
@@ -191,7 +199,14 @@ export const GeneratorInput = () => {
 											onClick={() => handleSubmitAnswer(idx)}
 											disabled={!textAnswers[idx] || evaluating[idx]}
 										>
-											{evaluating[idx] ? "評価中..." : "提出する"}
+											{evaluating[idx] ? (
+												<>
+													<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+													評価中...
+												</>
+											) : (
+												"提出する"
+											)}
 										</Button>
 									</div>
 									{evaluations[idx] && (
