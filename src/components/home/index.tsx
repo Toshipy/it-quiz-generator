@@ -257,6 +257,14 @@ export const GeneratorInput = () => {
 													</p>
 												</div>
 											)}
+											<div>
+												<p className="text-sm font-medium text-purple-600">
+													模範回答:
+												</p>
+												<p className="text-sm text-muted-foreground whitespace-pre-wrap">
+													{q.answer}
+												</p>
+											</div>
 										</div>
 									)}
 								</div>
