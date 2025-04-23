@@ -3,12 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface Question {
 	question: string;
@@ -20,6 +15,9 @@ export const GeneratorInput = () => {
 	const [text, setText] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [questions, setQuestions] = useState<Question[]>([]);
+	const [selectedAnswers, setSelectedAnswers] = useState<
+		Record<number, string>
+	>({});
 
 	const handleGenerate = async () => {
 		setLoading(true);
@@ -33,11 +31,19 @@ export const GeneratorInput = () => {
 			});
 			const data = await response.json();
 			setQuestions(data);
+			setSelectedAnswers({});
 		} catch (error) {
 			console.error("エラーが発生しました:", error);
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const handleAnswerChange = (questionIndex: number, value: string) => {
+		setSelectedAnswers((prev) => ({
+			...prev,
+			[questionIndex]: value,
+		}));
 	};
 
 	return (
@@ -68,21 +74,35 @@ export const GeneratorInput = () => {
 							<p className="font-semibold">
 								{idx + 1}. {q.question}
 							</p>
-							<ul className="list-disc ml-6 mt-2 text-sm text-muted-foreground">
-								{q.choices.map((choice, i) => (
-									<li key={`${q.question}-${choice}-${i}`}>{choice}</li>
-								))}
-							</ul>
-							<Accordion type="single" collapsible>
-								<AccordionItem value="item-1">
-									<AccordionTrigger className="font-bold text-green-600">
-										正解
-									</AccordionTrigger>
-									<AccordionContent className="text-red-600">
-										{q.answer}
-									</AccordionContent>
-								</AccordionItem>
-							</Accordion>
+							<div className="mt-4">
+								<RadioGroup
+									value={selectedAnswers[idx] || ""}
+									onValueChange={(value) => handleAnswerChange(idx, value)}
+								>
+									{q.choices.map((choice, i) => (
+										<div
+											key={`${q.question}-${choice}-${i}`}
+											className="flex items-center space-x-2"
+										>
+											<RadioGroupItem value={choice} id={`${idx}-${i}`} />
+											<label htmlFor={`${idx}-${i}`}>{choice}</label>
+										</div>
+									))}
+								</RadioGroup>
+								{selectedAnswers[idx] && (
+									<p
+										className={`mt-2 text-sm font-medium ${
+											selectedAnswers[idx] === q.answer
+												? "text-green-600"
+												: "text-red-600"
+										}`}
+									>
+										{selectedAnswers[idx] === q.answer
+											? "正解です！"
+											: `不正解です。正解は「${q.answer}」です。`}
+									</p>
+								)}
+							</div>
 						</div>
 					))}
 				</div>
